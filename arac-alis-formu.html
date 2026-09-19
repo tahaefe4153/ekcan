@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ekcan 2.El Otomotiv — Araç Alım Formu</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #EEF0F2;
+    --bg-panel: #FFFFFF;
+    --bg-card: #FBFAF7;
+    --bg-card-hover: #F2EFE8;
+    --line: #DEE2E6;
+    --text-primary: #211D1A;
+    --text-muted: #6E675B;
+    --text-faint: #A79E8F;
+    --red: #C4161D;
+    --red-deep: #8E1015;
+    --moss: #3F7A34;
+    --rust: #A8431F;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(ellipse 900px 400px at 50% 0%, rgba(196,22,29,0.045), transparent 65%),
+      var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 32px 24px 90px; }
+  .wrap.admin { max-width: 760px; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    left: 0; right: 0;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 10px rgba(20,16,12,0.05);
+    z-index: 30;
+  }
+  .topbar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-inner .mode-btn { margin-left: auto; }
+  .brand-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+  .page-intro { margin-bottom: 36px; text-align: center; }
+  .page-intro .sub {
+    display: block;
+    color: var(--text-primary);
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  @media (max-width: 480px) {
+    .page-intro .sub { font-size: 23px; }
+  }
+  .mode-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(20,16,12,0.05);
+    transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  .mode-btn:hover { border-color: var(--red); color: var(--red); box-shadow: 0 2px 8px rgba(196,22,29,0.12); }
+
+  .panel {
+    position: relative;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 30px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(20,16,12,0.04), 0 16px 40px -24px rgba(20,16,12,0.18);
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 28px; right: 28px;
+    height: 3px;
+    background: var(--red);
+    border-radius: 0 0 3px 3px;
+  }
+  .section-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--text-primary);
+    margin: 0 0 18px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+  }
+  .panel > div > .section-title { margin-top: 0; }
+
+  label { display: block; font-size: 11.5px; color: var(--text-muted); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 11px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(196,22,29,0.12);
+  }
+  input[type=number] { font-family: 'IBM Plex Mono', monospace; }
+  textarea { resize: vertical; min-height: 64px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+  .damage-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  .damage-table th, .damage-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: center; }
+  .damage-table td:first-child, .damage-table th:first-child { text-align: left; }
+  .damage-table th { color: var(--text-muted); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .damage-table input[type=radio] { accent-color: var(--red); cursor: pointer; }
+
+  button.submit {
+    width: 100%;
+    margin-top: 28px;
+    background: var(--red);
+    color: #FFFFFF;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px -4px rgba(196,22,29,0.45);
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  button.submit:hover { background: var(--red-deep); transform: translateY(-1px); box-shadow: 0 8px 20px -6px rgba(196,22,29,0.5); }
+  button.submit:active { transform: translateY(0); }
+
+  .final-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+  .final-actions .submit { margin-top: 0; }
+  button.submit.outline {
+    background: var(--bg-panel);
+    color: var(--red);
+    border: 1px solid var(--red);
+    box-shadow: none;
+  }
+  button.submit.outline:hover { background: rgba(196,22,29,0.06); box-shadow: none; }
+
+  .confirm {
+    text-align: center;
+    padding: 56px 20px;
+  }
+  .confirm .big { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 34px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; letter-spacing: 0.5px; }
+  .confirm p { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; max-width: 440px; margin: 0 auto; }
+  .confirm button { margin-top: 24px; }
+
+  /* Admin */
+  .admin-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .req-card {
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 0;
+  }
+  .req-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 16px; }
+  .req-head .rname { font-weight: 700; font-size: 17px; }
+  .req-head .rmeta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .status-tag {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .status-tag.new { border-color: var(--red); color: var(--red); background: rgba(196,22,29,0.06); }
+  .status-tag.done { border-color: var(--moss); color: var(--moss); background: rgba(63,122,52,0.07); }
+
+  .req-detail { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .req-detail.open { display: block; }
+  .info-board { display: grid; grid-template-columns: max-content 1fr; column-gap: 14px; row-gap: 9px; font-size: 14px; margin-bottom: 14px; }
+  .info-board .ib-item { display: contents; }
+  .info-board .ib-label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .info-board .ib-note { grid-column: 1 / -1; display: block; }
+  .info-board .ib-note .ib-label { display: block; margin-bottom: 3px; }
+
+  .req-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .price-note-row { margin-top: 4px; }
+  .req-actions select { width: auto; flex: 1; }
+  .req-actions button.del {
+    background: transparent; border: 1px solid var(--line); color: var(--text-faint);
+    padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: border-color 0.15s, color 0.15s;
+  }
+  .req-actions button.del:hover { border-color: var(--rust); color: var(--rust); }
+
+  .empty-state { color: var(--text-faint); font-size: 13px; padding: 36px 0; text-align: center; border: 1px dashed var(--line); border-radius: 12px; }
+
+  .header-left { display: flex; align-items: flex-start; gap: 12px; }
+  .hamburger-btn {
+    background: none;
+    border: none;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .hamburger-btn:hover { color: var(--red); transform: scale(1.08); }
+
+  .drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(20,16,12,0.45);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 40;
+  }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 270px;
+    background: var(--bg-panel);
+    box-shadow: 6px 0 30px rgba(0,0,0,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 41;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .drawer-close {
+    background: none; border: none; font-size: 16px; cursor: pointer;
+    color: var(--text-muted); padding: 4px;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .drawer-close:hover { color: var(--red); transform: rotate(90deg); }
+  @keyframes drawerLinkIn {
+    from { opacity: 0; transform: translateX(-14px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .drawer a {
+    display: block;
+    padding: 14px 4px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: color 0.15s, padding-left 0.15s;
+    opacity: 0;
+  }
+  .drawer.open a { animation: drawerLinkIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .drawer.open a:nth-child(2) { animation-delay: 0.08s; }
+  .drawer.open a:nth-child(3) { animation-delay: 0.14s; }
+  .drawer.open a:nth-child(4) { animation-delay: 0.2s; }
+  .drawer.open a:nth-child(5) { animation-delay: 0.26s; }
+  .drawer a:hover { color: var(--red); padding-left: 8px; }
+
+  .sahibinden-cta { text-align: center; margin: 18px 0 32px; }
+  .sahibinden-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: #FFE800;
+    color: #1A1A1A;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(20,16,12,0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .sahibinden-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+    margin-top: 40px;
+    padding: 40px 0 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .footer-watermark {
+    position: absolute;
+    left: -10px; bottom: -34px;
+    font-family: 'Anton', sans-serif;
+    font-size: 110px;
+    line-height: 1;
+    color: var(--text-primary);
+    opacity: 0.045;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .footer-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 560px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+  .footer-brand-mark {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .footer-brand p { margin: 0; max-width: 240px; line-height: 1.6; color: var(--text-faint); font-size: 12px; }
+  .footer-col h4 {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .footer-col a, .footer-col span.footer-link {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 11px;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .footer-col a:hover { color: var(--red); }
+  .footer-social { display: flex; gap: 10px; }
+  .footer-social a {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text-muted);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .footer-social a:hover { color: var(--red); border-color: var(--red); }
+  .privacy-details {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 14px;
+  }
+  .privacy-details summary {
+    cursor: pointer;
+    color: var(--text-muted);
+    list-style: none;
+    font-size: 13px;
+  }
+  .privacy-details summary::-webkit-details-marker { display: none; }
+  .privacy-details summary:hover { color: var(--red); }
+  .privacy-details[open] summary { color: var(--red); }
+  .privacy-details p {
+    margin: 10px 0 0;
+    max-width: 480px;
+    line-height: 1.6;
+    color: var(--text-faint);
+    font-size: 12px;
+  }
+  .footer-copy { position: relative; z-index: 1; color: var(--text-faint); font-size: 11.5px; }
+
+  .about-hero { text-align: center; padding: 12px 0 4px; }
+  .about-eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 14px;
+  }
+  .about-headline {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 30px;
+    line-height: 1.2;
+    color: var(--text-primary);
+    max-width: 560px;
+    margin: 0 auto 20px;
+  }
+  .about-headline em { color: var(--red); font-style: normal; }
+  .about-intro { max-width: 480px; margin: 0 auto; }
+  .about-intro p { color: var(--text-muted); font-size: 14.5px; line-height: 1.7; margin: 0 0 14px; }
+  .about-intro p:last-child { margin-bottom: 0; }
+
+  .about-pillars-head { text-align: center; margin: 40px 0 22px; }
+  .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 620px) { .pillar-grid { grid-template-columns: 1fr; } }
+  .pillar h3 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+  }
+  .pillar p { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0; }
+
+  .about-cta { text-align: center; margin-top: 36px; }
+
+  .contact-list { max-width: 440px; margin: 32px auto 0; display: flex; flex-direction: column; gap: 12px; }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg-card);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .contact-item:hover { border-color: var(--red); transform: translateY(-2px); box-shadow: 0 8px 20px -12px rgba(196,22,29,0.35); }
+  .contact-item svg { color: var(--red); flex-shrink: 0; }
+  .contact-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); margin-bottom: 2px; }
+  .contact-value { font-size: 14.5px; font-weight: 600; }
+  .contact-map {
+    position: relative;
+    display: block;
+    max-width: 440px;
+    margin: 16px auto 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .contact-map:hover { border-color: var(--red); transform: translateY(-2px); }
+  .contact-map svg { display: block; width: 100%; height: auto; }
+  .contact-map-label {
+    position: absolute;
+    right: 12px; bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+</style>
+</head>
+<body>
+<!-- Netlify form detection: static mirror of the dynamically-built form below, so Netlify's build-time scanner registers it. Never shown to visitors. -->
+<form name="arac-talebi" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="text" name="ad" />
+  <input type="text" name="tel" />
+  <input type="email" name="eposta" />
+  <input type="text" name="marka" />
+  <input type="text" name="model" />
+  <input type="text" name="donanim" />
+  <input type="text" name="yil" />
+  <input type="text" name="km" />
+  <input type="text" name="yakit" />
+  <input type="text" name="vites" />
+  <input type="text" name="renk" />
+  <input type="text" name="hasar" />
+  <input type="text" name="tramerTuru" />
+  <input type="text" name="tramerTutar" />
+  <input type="text" name="parcaDurumu" />
+  <input type="text" name="notlar" />
+  <input name="bot-field" />
+</form>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <button class="hamburger-btn" onclick="openDrawer()" aria-label="Menü">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    <img src="data:image/png;base64,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" alt="Ekcan 2.El Otomotiv" class="brand-logo">
+    <button class="mode-btn" id="mode-toggle" onclick="toggleMode()" style="display:none;">Panel (dükkan)</button>
+  </div>
+</header>
+<div class="wrap" id="wrap">
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <nav class="drawer" id="drawer">
+    <div class="drawer-head">
+      <span>Menü</span>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Kapat">✕</button>
+    </div>
+    <a onclick="goHome()">Ana Sayfa</a>
+    <a onclick="goAbout()">Hakkımızda</a>
+    <a onclick="goContact()">İletişim</a>
+    <a href="https://mgekcan.sahibinden.com" target="_blank" rel="noopener">Sahibinden Mağazamız</a>
+  </nav>
+
+  <div class="page-intro"><div class="sub" id="page-sub">Bilgilerinizi bırakın, ekibimiz size en kısa sürede bir fiyat teklifi sunsun.</div></div>
+
+  
+
+  <div class="sahibinden-cta" id="sahibinden-cta">
+    <a href="https://mgekcan.sahibinden.com" target="_blank" rel="noopener" class="sahibinden-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M0 0v24h24V0zm11.517 4.723c.563-.007 1.13-.004 1.69.063 2.412.054 4.853 2.18 4.879 4.508h-3.319c.009-.694-.603-1.555-1.279-1.732-1.105-.269-2.46-.355-3.43.294-.738.445-1.065 1.672-.095 2.056 2.288 1.083 5.158.846 7.224 2.372 1.698 1.21 1.598 3.666.274 5.086-1.718 1.84-4.636 2.132-7.099 1.782-2.448-.117-4.755-2.245-4.819-4.562h3.311c-.056.832.638 1.557 1.46 1.822 1.27.275 2.726.358 3.93-.19.96-.323 1.024-1.544.284-2.103-1.595-.897-3.565-.924-5.297-1.518-2.012-.39-3.643-2.278-3.26-4.197.424-2.342 3.127-3.727 5.546-3.681z"/></svg>
+      Sahibinden Mağazamızı Görüntüle
+    </a>
+  </div>
+
+  <div id="content"></div>
+
+  <footer class="site-footer">
+    <div class="footer-watermark">EKCAN</div>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-mark">EKCAN 2.EL</div>
+      </div>
+      <div class="footer-col">
+        <h4>Kurumsal</h4>
+        <a onclick="goHome()">Ana Sayfa</a>
+        <a onclick="goAbout()">Hakkımızda</a>
+        <a onclick="goContact()">İletişim</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=40.7600105,29.9749194&query_place_id=ChIJA42NfQtHyxQRHKT3mNaE-bg" target="_blank" rel="noopener">Konum</a>
+        <a href="https://mgekcan.sahibinden.com" target="_blank" rel="noopener">Sahibinden Mağazamız</a>
+      </div>
+      <div class="footer-col">
+        <h4>Bizi Takip Edin</h4>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/ekcan2el/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="tel:05384539794" aria-label="Telefon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </a>
+          <a href="mailto:cengiz.kayaci@mgekcan.com" aria-label="E-posta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <details class="privacy-details">
+      <summary>Gizlilik Sözleşmesi</summary>
+      <p>
+        Bu formda paylaştığınız bilgiler (ad, telefon, e-posta ve araç detayları) yalnızca aracınız için
+        fiyat teklifi hazırlamak amacıyla Ekcan 2.El Otomotiv tarafından kullanılır. Bilgileriniz üçüncü
+        taraflarla paylaşılmaz, pazarlama amacıyla kullanılmaz ve yalnızca teklif sürecini tamamlamak için
+        saklanır. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında, verilerinizin
+        silinmesini veya düzeltilmesini her zaman talep edebilirsiniz.
+      </p>
+    </details>
+    <div class="footer-copy">© 2026 Ekcan 2.El Otomotiv. Tüm hakları saklıdır.</div>
+  </footer>
+</div>
+
+<script>
+let requests = [];
+let lastSubmitViaWhatsApp = false;
+let mode = 'form'; // 'form' | 'confirm' | 'admin'
+let openReqId = null;
+
+async function loadRequests() {
+  try {
+    const res = await window.storage.get('requests', false);
+    requests = res ? JSON.parse(res.value) : [];
+  } catch (e) {
+    requests = [];
+  }
+}
+
+async function saveRequests() {
+  try {
+    await window.storage.set('requests', JSON.stringify(requests), false);
+  } catch (e) {
+    console.error('Kayıt hatası', e);
+  }
+}
+
+function toggleMode() {
+  mode = mode === 'admin' ? 'form' : 'admin';
+  render();
+}
+
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+function goHome() {
+  mode = 'form';
+  closeDrawer();
+  render();
+}
+
+function goAbout() {
+  mode = 'about';
+  closeDrawer();
+  render();
+}
+
+function goContact() {
+  mode = 'contact';
+  closeDrawer();
+  render();
+}
+
+function contactHtml() {
+  return `
+  <div class="about-hero">
+    <div class="about-eyebrow">Bize Ulaşın</div>
+    <div class="about-headline">İletişim <em>Bilgilerimiz</em></div>
+  </div>
+
+  <div class="contact-list">
+    <a href="https://www.google.com/maps/search/?api=1&query=40.7600105,29.9749194&query_place_id=ChIJA42NfQtHyxQRHKT3mNaE-bg" target="_blank" rel="noopener" class="contact-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div><div class="contact-label">Konum</div><div class="contact-value">Ovacık, D-100 Karayolu, Başiskele/Kocaeli</div></div>
+    </a>
+    <a href="tel:05384539794" class="contact-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <div><div class="contact-label">Telefon</div><div class="contact-value">0538 453 97 94</div></div>
+    </a>
+    <a href="mailto:cengiz.kayaci@mgekcan.com" class="contact-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <div><div class="contact-label">E-posta</div><div class="contact-value">cengiz.kayaci@mgekcan.com</div></div>
+    </a>
+    <a href="https://www.instagram.com/ekcan2el/" target="_blank" rel="noopener" class="contact-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      <div><div class="contact-label">Instagram</div><div class="contact-value">@ekcan2el</div></div>
+    </a>
+    <a href="https://mgekcan.sahibinden.com" target="_blank" rel="noopener" class="contact-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0zm11.517 4.723c.563-.007 1.13-.004 1.69.063 2.412.054 4.853 2.18 4.879 4.508h-3.319c.009-.694-.603-1.555-1.279-1.732-1.105-.269-2.46-.355-3.43.294-.738.445-1.065 1.672-.095 2.056 2.288 1.083 5.158.846 7.224 2.372 1.698 1.21 1.598 3.666.274 5.086-1.718 1.84-4.636 2.132-7.099 1.782-2.448-.117-4.755-2.245-4.819-4.562h3.311c-.056.832.638 1.557 1.46 1.822 1.27.275 2.726.358 3.93-.19.96-.323 1.024-1.544.284-2.103-1.595-.897-3.565-.924-5.297-1.518-2.012-.39-3.643-2.278-3.26-4.197.424-2.342 3.127-3.727 5.546-3.681z"/></svg>
+      <div><div class="contact-label">Sahibinden</div><div class="contact-value">Mağazamızı Görüntüle</div></div>
+    </a>
+  </div>`;
+}
+
+function aboutHtml() {
+  return `
+  <div class="about-hero">
+    <div class="about-eyebrow">Kocaeli · Türkiye</div>
+    <div class="about-headline">30 yıldır aracına <em>değer</em> verenler için.</div>
+    <div class="about-intro">
+      <p>Ekcan 2.El Otomotiv, Kocaeli merkezli olarak faaliyet gösteren, sektörde köklü bir geçmişe sahip aile işletmesidir. Yılların getirdiği birikim ve tecrübeyle, ikinci el araç alım satımında güvenilir bir çözüm ortağı olmayı ilke edindik. Aracını satmak isteyen her müşteriye profesyonel bir değerlendirme süreci sunmayı amaçlıyoruz. Her araç; teknik durumu ve piyasa koşulları göz önünde bulundurularak titizlikle incelenir; bu değerlendirme sonucunda müşterilerimize net ve gerçekçi bir fiyat teklifi sunulur. 30 yılı aşkın sektör birikimiyle her aracı doğru değerlendiriyoruz, süreç boyunca açık iletişim kurar, sorularınıza anlaşılır yanıtlar veririz.</p>
+    </div>
+  </div>`;
+}
+
+function fmt(n) {
+  if (n === null || n === undefined || n === '' || isNaN(n)) return '—';
+  return Number(n).toLocaleString('tr-TR') + ' TL';
+}
+
+const PARCALAR = [
+  'Sağ arka çamurluk', 'Arka kaput', 'Sol arka çamurluk', 'Sağ arka kapı', 'Sağ ön kapı',
+  'Tavan', 'Sol arka kapı', 'Sol ön kapı', 'Sağ ön çamurluk', 'Motor kaputu',
+  'Sol ön çamurluk', 'Ön tampon', 'Arka tampon'
+];
+
+function damagePartRows() {
+  return PARCALAR.map((p, i) => `
+    <tr>
+      <td>${p}</td>
+      <td><input type="radio" name="parca-${i}" value="Orijinal" checked></td>
+      <td><input type="radio" name="parca-${i}" value="Boyalı"></td>
+      <td><input type="radio" name="parca-${i}" value="Değişmiş"></td>
+    </tr>
+  `).join('');
+}
+
+function yearOptions() {
+  let opts = '';
+  for (let y = 2027; y >= 2005; y--) {
+    opts += `<option value="${y}">${y}</option>`;
+  }
+  return opts;
+}
+
+function formHtml() {
+  return `
+  <div class="panel" id="step-1-panel">
+    <div id="step-1">
+      <div class="section-title" data-n="01">İletişim Bilgileriniz</div>
+      <div class="field-row">
+        <div><label>Ad Soyad</label><input id="r-ad"></div>
+        <div><label>Telefon</label><input id="r-tel" oninput="checkStep1()" placeholder="05xx xxx xx xx"></div>
+      </div>
+      <label>E-posta (opsiyonel)</label>
+      <input id="r-eposta" type="email">
+    </div>
+  </div>
+
+  <div class="panel" id="step-2-panel" style="display:none;">
+    <div id="step-2">
+      <div class="section-title" data-n="02">Araç Bilgileri</div>
+      <div class="field-row">
+        <div><label>Marka</label>
+          <input id="r-marka" list="marka-list" autocomplete="off" oninput="onMarkaChange(); checkStep2();">
+          <datalist id="marka-list">
+            <option>Renault</option><option>Fiat</option><option>Volkswagen</option><option>Ford</option>
+            <option>Toyota</option><option>Hyundai</option><option>Opel</option><option>Peugeot</option>
+            <option>Citroën</option><option>Dacia</option><option>Honda</option><option>Nissan</option>
+            <option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Skoda</option>
+            <option>Seat</option><option>Cupra</option><option>Kia</option><option>Chevrolet</option><option>Mazda</option>
+            <option>Suzuki</option><option>Mitsubishi</option><option>Volvo</option><option>Land Rover</option>
+            <option>Jeep</option><option>Mini</option><option>Alfa Romeo</option><option>Lada</option>
+            <option>Tofaş</option><option>Subaru</option><option>Jaguar</option><option>Porsche</option>
+            <option>Tesla</option><option>MG</option><option>Chery</option><option>BYD</option>
+          </datalist>
+        </div>
+        <div><label>Model</label><input id="r-model" oninput="checkStep2()"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Model Yılı</label>
+          <select id="r-yil">
+            <option value="">—</option>
+            ${yearOptions()}
+          </select>
+        </div>
+        <div>
+          <label>Donanım Paketi</label>
+          <input id="r-donanim" list="donanim-list" autocomplete="off">
+          <datalist id="donanim-list"></datalist>
+        </div>
+      </div>
+      <div>
+        <label>Kilometre</label>
+        <input id="r-km" type="number" oninput="checkKm()">
+        <div id="km-warning" style="display:none; font-size:12px; color:var(--rust); margin-top:6px; line-height:1.5;">
+          Sistemimiz şu an için 200.000 km üzerindeki araçlara fiyatlandırma hizmeti sunmamaktadır. Aracınızla ilgili değerlendirme için lütfen bizimle doğrudan iletişime geçin.
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label>Yakıt Tipi</label>
+          <select id="r-yakit">
+            <option value="">—</option>
+            <option>Benzin</option><option>Dizel</option><option>LPG</option><option>Hibrit</option><option>Elektrik</option>
+          </select>
+        </div>
+        <div>
+          <label>Vites</label>
+          <select id="r-vites">
+            <option value="">—</option>
+            <option>Manuel</option><option>Otomatik</option>
+          </select>
+        </div>
+      </div>
+      <label>Renk</label>
+      <select id="r-renk">
+        <option value="">—</option>
+        <option>Beyaz</option><option>Siyah</option><option>Gri</option><option>Gümüş</option>
+        <option>Kırmızı</option><option>Mavi</option><option>Lacivert</option><option>Yeşil</option>
+        <option>Sarı</option><option>Turuncu</option><option>Kahverengi</option><option>Bej</option>
+        <option>Mor</option><option>Diğer</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="panel" id="step-3-panel" style="display:none;">
+    <div id="step-3">
+      <div class="section-title" data-n="03">Durum</div>
+      <label>Hasar / Tramer Kaydı</label>
+      <select id="r-hasar" onchange="toggleTramerBar()">
+        <option value="">—</option>
+        <option>Var</option>
+        <option>Yok</option>
+      </select>
+
+      <div id="hasar-detail" style="display:none;">
+        <label style="margin-top:16px;">Parça Durumu</label>
+        <table class="damage-table">
+          <thead>
+            <tr><th></th><th>Orijinal</th><th>Boyalı</th><th>Değişmiş</th></tr>
+          </thead>
+          <tbody>
+            ${damagePartRows()}
+          </tbody>
+        </table>
+
+        <div class="field-row" style="margin-top:16px;">
+          <div>
+            <label>Tramer Türü</label>
+            <select id="r-tramer-turu">
+              <option value="">—</option>
+              <option>Var</option>
+              <option>Yok</option>
+            </select>
+          </div>
+          <div>
+            <label>Toplam Tramer Tutarı (TL)</label>
+            <input id="r-tramer-tutar" type="number">
+          </div>
+        </div>
+      </div>
+
+      <label>Eklemek İstediğiniz Notlar</label>
+      <textarea id="r-notlar"></textarea>
+
+      <div class="final-actions">
+        <button class="submit" onclick="submitRequest(true)">WhatsApp'tan Gönder</button>
+        <button class="submit outline" onclick="submitRequest(false)">Gönder</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function isValidTrPhone(val) {
+  const digits = val.replace(/\D/g, '');
+  return /^0?5\d{9}$/.test(digits);
+}
+
+function checkStep1() {
+  const tel = document.getElementById('r-tel').value.trim();
+  const step2 = document.getElementById('step-2-panel');
+  const step3 = document.getElementById('step-3-panel');
+  if (isValidTrPhone(tel)) {
+    step2.style.display = 'block';
+  } else {
+    step2.style.display = 'none';
+    step3.style.display = 'none';
+  }
+}
+
+function checkStep2() {
+  const marka = document.getElementById('r-marka').value.trim();
+  const model = document.getElementById('r-model').value.trim();
+  const step3 = document.getElementById('step-3-panel');
+  if (marka && model) {
+    step3.style.display = 'block';
+  } else {
+    step3.style.display = 'none';
+  }
+}
+
+function confirmHtml() {
+  const msg = lastSubmitViaWhatsApp
+    ? "Bilgileriniz kaydedildi ve WhatsApp'a yönlendirildiniz — açılan sohbette mesajı göndermeniz yeterli. En kısa sürede sizinle iletişime geçeceğiz."
+    : "Bilgileriniz bize ulaştı. En kısa sürede sizinle iletişime geçeceğiz.";
+  return `
+  <div class="panel confirm">
+    <div class="big">Teşekkürler!</div>
+    <p>${msg}</p>
+    <button class="mode-btn" onclick="mode='form'; render();">Yeni bir kayıt gir</button>
+  </div>`;
+}
+
+function seedSampleData() {
+  const samples = [
+    {
+      id: Date.now().toString(36) + '1', ad: 'Mehmet Yılmaz', tel: '0532 111 22 33', eposta: 'mehmet@example.com',
+      marka: 'Renault', model: 'Clio', yil: '2019', km: '112000', yakit: 'Dizel', vites: 'Manuel', renk: 'Gri',
+      hasar: 'Yok', tramerTuru: null, tramerTutar: null, parcaDurumu: null, boya: 'Yok',
+      notlar: 'Tek elden, bakımları yetkili serviste yapıldı.', durum: 'Yeni', createdAt: new Date().toISOString()
+    },
+    {
+      id: Date.now().toString(36) + '2', ad: 'Ayşe Kara', tel: '0505 444 55 66', eposta: '',
+      marka: 'Volkswagen', model: 'Passat', yil: '2016', km: '168000', yakit: 'Dizel', vites: 'Otomatik', renk: 'Siyah',
+      hasar: 'Var', tramerTuru: 'Var', tramerTutar: '18000', parcaDurumu: ['Ön tampon: Boyalı', 'Sağ ön çamurluk: Değişmiş'],
+      boya: 'Var', notlar: 'Küçük bir kaza sonrası ön tampon ve çamurluk yenilendi.', durum: 'İncelendi',
+      createdAt: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      id: Date.now().toString(36) + '3', ad: 'Caner Demir', tel: '0542 777 88 99', eposta: 'caner.demir@example.com',
+      marka: 'Toyota', model: 'Corolla', yil: '2021', km: '54000', yakit: 'Hibrit', vites: 'Otomatik', renk: 'Beyaz',
+      hasar: 'Yok', tramerTuru: null, tramerTutar: null, parcaDurumu: null, boya: 'Yok',
+      notlar: '', durum: 'Teklif Verildi', createdAt: new Date(Date.now() - 2 * 86400000).toISOString()
+    }
+  ];
+  requests = requests.concat(samples);
+  saveRequests();
+  render();
+}
+
+function adminHtml() {
+  const refreshBar = `<div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:14px;"><button class="mode-btn" onclick="exportCsv()">Excel'e Aktar</button><button class="mode-btn" onclick="refreshSubmissions()">Yenile</button></div>`;
+  if (requests.length === 0) {
+    return refreshBar + `<div class="empty-state">Henüz gelen talep yok.</div>`;
+  }
+  const sorted = [...requests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  return refreshBar + `<div class="admin-grid">` + sorted.map(r => `
+    <div class="req-card">
+      <div class="req-head" onclick="toggleReq('${r.id}')">
+        <div>
+          <div class="rname">${r.ad || 'İsimsiz'} — ${r.marka} ${r.model}${r.donanim ? ' ' + r.donanim : ''}${r.yil ? ' · ' + r.yil : ''}</div>
+          <div class="rmeta">${r.km ? Number(r.km).toLocaleString('tr-TR') + ' km · ' : ''}${new Date(r.createdAt).toLocaleDateString('tr-TR')}${r.verilenFiyat ? ' · <strong style="color:var(--red);">' + Number(r.verilenFiyat).toLocaleString('tr-TR') + ' TL</strong>' : ''}</div>
+        </div>
+        <span class="status-tag ${r.durum === 'Yeni' ? 'new' : r.durum === 'Teklif Verildi' ? 'done' : ''}">${r.durum}</span>
+      </div>
+      <div class="req-detail ${openReqId === r.id ? 'open' : ''}" id="detail-${r.id}">
+        <div class="info-board">
+          <div class="ib-item"><div class="ib-label">Telefon</div><div>${r.tel || '—'}</div></div>
+          <div class="ib-item"><div class="ib-label">E-posta</div><div>${r.eposta || '—'}</div></div>
+          <div class="ib-item"><div class="ib-label">Yakıt / Vites</div><div>${[r.yakit, r.vites].filter(Boolean).join(' · ') || '—'}</div></div>
+          <div class="ib-item"><div class="ib-label">Renk</div><div>${r.renk || '—'}</div></div>
+          <div class="ib-item"><div class="ib-label">Hasar / Tramer</div><div>${r.hasar || '—'}${r.hasar === 'Var' && r.tramerTuru ? ' — ' + r.tramerTuru : ''}${r.hasar === 'Var' && r.tramerTutar ? ' (' + Number(r.tramerTutar).toLocaleString('tr-TR') + ' TL)' : ''}</div></div>
+          <div class="ib-item"><div class="ib-label">Kilometre</div><div>${r.km ? Number(r.km).toLocaleString('tr-TR') : '—'}</div></div>
+          ${r.parcaDurumu ? `<div class="ib-note"><div class="ib-label">Boyalı / Değişen Parçalar</div><div>${r.parcaDurumu.join(', ')}</div></div>` : ''}
+          ${r.notlar ? `<div class="ib-note"><div class="ib-label">Notlar</div><div>${r.notlar}</div></div>` : ''}
+        </div>
+        <div class="price-note-row">
+          <label style="margin:0 0 6px;">Verilen Fiyat (TL)</label>
+          <div style="display:flex; gap:8px;">
+            <input id="fiyat-${r.id}" type="number" value="${r.verilenFiyat || ''}" placeholder="Örn. 850000">
+            <button class="mode-btn" onclick="savePriceNote('${r.id}')">Kaydet</button>
+          </div>
+        </div>
+        <div class="req-actions">
+          <select onchange="setStatus('${r.id}', this.value)">
+            <option ${r.durum === 'Yeni' ? 'selected' : ''}>Yeni</option>
+            <option ${r.durum === 'İncelendi' ? 'selected' : ''}>İncelendi</option>
+            <option ${r.durum === 'Teklif Verildi' ? 'selected' : ''}>Teklif Verildi</option>
+          </select>
+          <button class="del" onclick="deleteReq('${r.id}')">Sil</button>
+        </div>
+      </div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+function toggleReq(id) {
+  openReqId = openReqId === id ? null : id;
+  render();
+}
+
+function setStatus(id, val) {
+  const r = requests.find(x => x.id === id);
+  if (r) {
+    r.durum = val;
+    const overrides = JSON.parse(localStorage.getItem('durum-overrides') || '{}');
+    overrides[id] = val;
+    localStorage.setItem('durum-overrides', JSON.stringify(overrides));
+  }
+}
+
+function savePriceNote(id) {
+  const val = document.getElementById('fiyat-' + id).value;
+  const r = requests.find(x => x.id === id);
+  if (r) r.verilenFiyat = val || null;
+  const notes = JSON.parse(localStorage.getItem('fiyat-notlari') || '{}');
+  if (val) {
+    notes[id] = val;
+  } else {
+    delete notes[id];
+  }
+  localStorage.setItem('fiyat-notlari', JSON.stringify(notes));
+  render();
+}
+
+async function deleteReq(id) {
+  if (!confirm('Bu talep silinsin mi? (Netlify\'daki gerçek kayıt da silinecek)')) return;
+  const pass = localStorage.getItem('admin-pass');
+  try {
+    await fetch('/.netlify/functions/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pass, id, action: 'delete' })
+    });
+  } catch (e) {
+    console.error('Silme hatası', e);
+  }
+  requests = requests.filter(x => x.id !== id);
+  render();
+}
+
+const PAKETLER = {
+  'Renault': ['Joy', 'Touch', 'Icon', 'Zen', 'Edition One', 'Equilibre', 'Evolution', 'Techno Esprit Alpine', 'GT Line'],
+  'Fiat': ['Easy', 'Urban', 'Lounge', 'Street', 'Mirror', 'Limited', 'Sport'],
+  'Volkswagen': ['Trendline', 'Comfortline', 'Highline', 'R-Line', 'Life', 'Style', 'Elegance', 'Impression', 'Business', 'Exclusive'],
+  'Ford': ['Ambiente', 'Trend', 'Trend X', 'Titanium', 'Titanium X', 'ST-Line', 'Active', 'Vignale'],
+  'Toyota': ['Vision', 'Dream', 'Flame', 'Passion', 'Passion X-Pack', 'Life', 'Active', 'Premium'],
+  'Hyundai': ['Jump', 'Style', 'Style Plus', 'Elite', 'N Line'],
+  'Opel': ['Edition', 'Elegance', 'GS', 'GS Line', 'Ultimate'],
+  'Peugeot': ['Active', 'Active Pack', 'Allure', 'GT', 'GT Line'],
+  'Citroën': ['Live', 'Feel', 'Shine'],
+  'Dacia': ['Access', 'Essential', 'Comfort', 'Prestige', 'Journey', 'Extreme'],
+  'Honda': ['Elegance', 'Executive', 'Sport'],
+  'Nissan': ['Visia', 'Acenta', 'Tekna', 'N-Connecta'],
+  'Mercedes-Benz': ['Style', 'Progressive', 'AMG Line', 'Exclusive'],
+  'BMW': ['Standart', 'Sport Line', 'Luxury Line', 'M Sport'],
+  'Audi': ['Standart', 'Design', 'S Line', 'Advanced'],
+  'Skoda': ['Active', 'Ambition', 'Style', 'Elegance'],
+  'Seat': ['Reference', 'Style', 'Xcellence', 'FR'],
+  'Cupra': ['V1', 'V2', 'VZ'],
+  'Kia': ['Live', 'Cool', 'Concept', 'Prestige', 'GT Line'],
+  'Chevrolet': ['LS', 'LT', 'LTZ'],
+  'Mazda': ['Sense', 'Home', 'Dynamic', 'Centre-Line', 'Exclusive-Line'],
+  'Suzuki': ['GL', 'GLX', 'GLE'],
+  'Mitsubishi': ['Invite', 'Instyle', 'Intense'],
+  'Volvo': ['Momentum', 'Inscription', 'R-Design', 'Plus', 'Ultimate'],
+  'Land Rover': ['S', 'SE', 'HSE', 'Autobiography'],
+  'Jeep': ['Longitude', 'Limited', 'Overland', 'Trailhawk'],
+  'Mini': ['Classic', 'Cooper', 'Cooper S', 'John Cooper Works'],
+  'Alfa Romeo': ['Super', 'Sprint', 'Veloce', 'Ti'],
+  'Lada': ['Standart', 'Comfort', 'Luxe'],
+  'Tofaş': ['S', 'SL', 'SLX'],
+  'Subaru': ['Comfort', 'Premium', 'Executive'],
+  'Jaguar': ['S', 'SE', 'HSE', 'R-Dynamic'],
+  'Porsche': ['Standart', 'S', 'GTS', 'Turbo'],
+  'Tesla': ['Standard Range', 'Long Range', 'Performance'],
+  'MG': ['Comfort', 'Luxury', 'Trophy'],
+  'Chery': ['Comfort', 'Luxury', 'Flagship'],
+  'BYD': ['Comfort', 'Design', 'Premium']
+};
+
+function onMarkaChange() {
+  const markaVal = document.getElementById('r-marka').value.trim();
+  const donanimList = document.getElementById('donanim-list');
+
+  if (!markaVal) {
+    donanimList.innerHTML = '';
+    return;
+  }
+
+  const matchKey = Object.keys(PAKETLER).find(k => k.toLocaleLowerCase('tr') === markaVal.toLocaleLowerCase('tr'));
+  donanimList.innerHTML = matchKey ? PAKETLER[matchKey].map(p => `<option>${p}</option>`).join('') : '';
+}
+
+function toggleTramerBar() {
+  const val = document.getElementById('r-hasar').value;
+  document.getElementById('hasar-detail').style.display = (val === 'Var') ? 'block' : 'none';
+}
+
+function checkKm() {
+  const km = parseFloat(document.getElementById('r-km').value);
+  const warn = document.getElementById('km-warning');
+  warn.style.display = (km && km > 200000) ? 'block' : 'none';
+}
+
+function collectPartStatus() {
+  const result = [];
+  PARCALAR.forEach((p, i) => {
+    const checked = document.querySelector(`input[name="parca-${i}"]:checked`);
+    if (checked && checked.value !== 'Orijinal') {
+      result.push(`${p}: ${checked.value}`);
+    }
+  });
+  return result.length ? result : null;
+}
+
+function encodeFormData(data) {
+  return Object.keys(data)
+    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k] == null ? '' : data[k]))
+    .join('&');
+}
+
+function submitToNetlifyForms(r) {
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: encodeFormData({
+      'form-name': 'arac-talebi',
+      ad: r.ad, tel: r.tel, eposta: r.eposta, marka: r.marka, model: r.model,
+      donanim: r.donanim, yil: r.yil, km: r.km, yakit: r.yakit, vites: r.vites,
+      renk: r.renk, hasar: r.hasar, tramerTuru: r.tramerTuru, tramerTutar: r.tramerTutar,
+      parcaDurumu: r.parcaDurumu ? r.parcaDurumu.join(', ') : '', notlar: r.notlar
+    })
+  }).catch(err => console.error('Netlify form gönderim hatası (yalnızca yayında çalışır):', err));
+}
+
+function submitRequest(viaWhatsApp) {
+  const ad = document.getElementById('r-ad').value.trim();
+  const tel = document.getElementById('r-tel').value.trim();
+  const marka = document.getElementById('r-marka').value.trim();
+  const model = document.getElementById('r-model').value.trim();
+
+  if (!ad || !isValidTrPhone(tel) || !marka || !model) {
+    alert('Ad soyad, geçerli bir telefon numarası, marka ve model zorunlu.');
+    return;
+  }
+
+  const kmVal = parseFloat(document.getElementById('r-km').value);
+  if (kmVal && kmVal > 200000) {
+    alert('Sistemimiz şu an için 200.000 km üzerindeki araçlara fiyatlandırma hizmeti sunmamaktadır.');
+    return;
+  }
+
+  const r = {
+    id: Date.now().toString(36),
+    ad,
+    tel: document.getElementById('r-tel').value.trim(),
+    eposta: document.getElementById('r-eposta').value.trim(),
+    marka, model,
+    donanim: document.getElementById('r-donanim').value.trim() || null,
+    yil: document.getElementById('r-yil').value || null,
+    km: document.getElementById('r-km').value || null,
+    yakit: document.getElementById('r-yakit').value || null,
+    vites: document.getElementById('r-vites').value || null,
+    renk: document.getElementById('r-renk').value || null,
+    hasar: document.getElementById('r-hasar').value || null,
+    tramerTuru: document.getElementById('r-hasar').value === 'Var' ? document.getElementById('r-tramer-turu').value || null : null,
+    tramerTutar: document.getElementById('r-hasar').value === 'Var' ? document.getElementById('r-tramer-tutar').value || null : null,
+    parcaDurumu: document.getElementById('r-hasar').value === 'Var' ? collectPartStatus() : null,
+    notlar: document.getElementById('r-notlar').value.trim() || null,
+    durum: 'Yeni',
+    createdAt: new Date().toISOString()
+  };
+  requests.unshift(r);
+  saveRequests();
+  submitToNetlifyForms(r);
+
+  lastSubmitViaWhatsApp = !!viaWhatsApp;
+  if (viaWhatsApp) {
+    const mesaj = buildWhatsAppMessage(r);
+    const waUrl = 'https://wa.me/905384539794?text=' + encodeURIComponent(mesaj);
+    window.open(waUrl, '_blank');
+  }
+
+  mode = 'confirm';
+  render();
+}
+
+function buildWhatsAppMessage(r) {
+  const lines = [
+    'Merhaba, aracımla ilgili fiyat teklifi almak istiyorum.',
+    '',
+    `Ad Soyad: ${r.ad}`,
+    r.tel ? `Telefon: ${r.tel}` : null,
+    `Araç: ${r.marka} ${r.model}${r.donanim ? ' ' + r.donanim : ''}`,
+    r.yil ? `Model Yılı: ${r.yil}` : null,
+    r.km ? `Kilometre: ${r.km}` : null,
+    (r.yakit || r.vites) ? `Yakıt / Vites: ${[r.yakit, r.vites].filter(Boolean).join(' / ')}` : null,
+    r.renk ? `Renk: ${r.renk}` : null,
+    r.hasar ? `Hasar/Tramer: ${r.hasar}${r.tramerTutar ? ' (' + Number(r.tramerTutar).toLocaleString('tr-TR') + ' TL)' : ''}` : null,
+    r.parcaDurumu ? `Boyalı/Değişen: ${r.parcaDurumu.join(', ')}` : null,
+    r.notlar ? `Not: ${r.notlar}` : null
+  ].filter(Boolean);
+  return lines.join('\n');
+}
+
+function render() {
+  const wrapEl = document.getElementById('wrap');
+  const sub = document.getElementById('page-sub');
+  const toggleBtn = document.getElementById('mode-toggle');
+  const content = document.getElementById('content');
+  const sahibindenCta = document.getElementById('sahibinden-cta');
+
+  sahibindenCta.style.display = (mode === 'form') ? 'block' : 'none';
+
+  if (mode === 'locked') {
+    wrapEl.classList.remove('admin');
+    sub.textContent = 'Bu alan yetkilendirme gerektirir.';
+    content.innerHTML = lockedHtml();
+  } else if (mode === 'admin') {
+    wrapEl.classList.add('admin');
+    sub.textContent = `Müşterilerin gönderdiği araç bilgileri — toplam ${requests.length} kayıt.`;
+    toggleBtn.textContent = 'Müşteri Formu';
+    content.innerHTML = adminHtml();
+  } else {
+    wrapEl.classList.remove('admin');
+    toggleBtn.textContent = 'Panel (dükkan)';
+    if (mode === 'confirm') {
+      sub.textContent = 'Bilgilerinizi bırakın, ekibimiz size en kısa sürede bir fiyat teklifi sunsun.';
+      content.innerHTML = confirmHtml();
+    } else if (mode === 'about') {
+      sub.textContent = 'Ekcan 2.El Otomotiv hakkında.';
+      content.innerHTML = aboutHtml();
+    } else if (mode === 'contact') {
+      sub.textContent = 'Bizimle iletişime geçin.';
+      content.innerHTML = contactHtml();
+    } else {
+      sub.textContent = 'Bilgilerinizi bırakın, ekibimiz size en kısa sürede bir fiyat teklifi sunsun.';
+      content.innerHTML = formHtml();
+    }
+  }
+  setupScrollReveal();
+}
+
+let revealObserver = null;
+function setupScrollReveal() {
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+  }
+  document.querySelectorAll('.panel, .req-card').forEach(el => {
+    if (!el.classList.contains('reveal')) {
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    }
+  });
+}
+
+function lockedHtml() {
+  return `
+  <div class="panel" style="max-width:380px; margin:0 auto; text-align:center;">
+    <div class="section-title" style="justify-content:center;">Panel Girişi</div>
+    <label>Şifre</label>
+    <input id="admin-pass" type="password" onkeydown="if(event.key==='Enter') checkAdminPassword()">
+    <button class="submit" onclick="checkAdminPassword()">Giriş Yap</button>
+  </div>`;
+}
+
+async function loadRealSubmissions() {
+  const pass = localStorage.getItem('admin-pass');
+  try {
+    const res = await fetch('/.netlify/functions/submissions?pass=' + encodeURIComponent(pass));
+    if (!res.ok) { requests = []; return false; }
+    const data = await res.json();
+    if (!Array.isArray(data)) { requests = []; return false; }
+
+    const overrides = JSON.parse(localStorage.getItem('durum-overrides') || '{}');
+    const priceNotes = JSON.parse(localStorage.getItem('fiyat-notlari') || '{}');
+    requests = data.map(sub => ({
+      id: sub.id,
+      ad: sub.data.ad || null,
+      tel: sub.data.tel || null,
+      eposta: sub.data.eposta || null,
+      marka: sub.data.marka || null,
+      model: sub.data.model || null,
+      donanim: sub.data.donanim || null,
+      yil: sub.data.yil || null,
+      km: sub.data.km || null,
+      yakit: sub.data.yakit || null,
+      vites: sub.data.vites || null,
+      renk: sub.data.renk || null,
+      hasar: sub.data.hasar || null,
+      tramerTuru: sub.data.tramerTuru || null,
+      tramerTutar: sub.data.tramerTutar || null,
+      parcaDurumu: sub.data.parcaDurumu ? sub.data.parcaDurumu.split(',').map(s => s.trim()).filter(Boolean) : null,
+      notlar: sub.data.notlar || null,
+      durum: overrides[sub.id] || 'Yeni',
+      verilenFiyat: priceNotes[sub.id] || null,
+      createdAt: sub.created_at
+    }));
+    return true;
+  } catch (e) {
+    console.error('Veri çekme hatası', e);
+    requests = [];
+    return false;
+  }
+}
+
+async function checkAdminPassword() {
+  const val = document.getElementById('admin-pass').value;
+  localStorage.setItem('admin-pass', val);
+  const ok = await loadRealSubmissions();
+  if (ok) {
+    mode = 'admin';
+  } else {
+    alert('Yanlış şifre ya da sunucu henüz hazır değil.');
+    localStorage.removeItem('admin-pass');
+  }
+  render();
+}
+
+function exportCsv() {
+  if (requests.length === 0) {
+    alert('Aktarılacak talep yok.');
+    return;
+  }
+  const headers = ['Tarih', 'Ad Soyad', 'Telefon', 'E-posta', 'Marka', 'Model', 'Donanım', 'Yıl', 'Kilometre', 'Yakıt', 'Vites', 'Renk', 'Hasar/Tramer', 'Tramer Türü', 'Tramer Tutarı', 'Boyalı/Değişen Parçalar', 'Notlar', 'Durum', 'Verilen Fiyat'];
+  const rows = requests.map(r => [
+    new Date(r.createdAt).toLocaleString('tr-TR'),
+    r.ad, r.tel, r.eposta, r.marka, r.model, r.donanim, r.yil, r.km, r.yakit, r.vites, r.renk,
+    r.hasar, r.tramerTuru, r.tramerTutar,
+    r.parcaDurumu ? r.parcaDurumu.join(' / ') : '',
+    r.notlar, r.durum, r.verilenFiyat
+  ]);
+  const escapeCsv = (v) => {
+    const s = (v === null || v === undefined) ? '' : String(v);
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+  const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(escapeCsv).join(';')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ekcan-arac-talepleri-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function refreshSubmissions() {
+  await loadRealSubmissions();
+  render();
+}
+
+(async function init() {
+  if (window.location.pathname.replace(/\/$/, '') === '/.admin') {
+    const savedPass = localStorage.getItem('admin-pass');
+    if (savedPass) {
+      const ok = await loadRealSubmissions();
+      mode = ok ? 'admin' : 'locked';
+    } else {
+      mode = 'locked';
+    }
+  } else {
+    await loadRequests();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
