@@ -40,7 +40,7 @@ exports.handler = async function (event) {
   }
 
   const headers = { Authorization: `Bearer ${token}` };
-  const store = getStore(STORE_NAME);
+  const store = getStore({ name: STORE_NAME, siteID: siteId, token: token });
 
   try {
     if (event.httpMethod === 'POST') {
