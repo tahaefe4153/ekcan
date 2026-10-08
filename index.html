@@ -787,7 +787,10 @@ function formHtml() {
       </div>
       <div>
         <label>Motor</label>
-        <input id="r-motor" type="text" autocomplete="off" oninput="checkStep2()">
+        <select id="r-motor" onchange="checkStep2()">
+          <option value="">—</option>
+          <optgroup label="Benzin / LPG"><option>1.0</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.8</option><option>2.0</option><option>2.2</option><option>2.5</option><option>3.0</option></optgroup><optgroup label="Benzin Turbo (T)"><option>1.0T</option><option>1.2T</option><option>1.3T</option><option>1.4T</option><option>1.5T</option><option>1.6T</option><option>1.8T</option><option>2.0T</option><option>2.5T</option><option>3.0T</option></optgroup><optgroup label="Dizel (Turbo)"><option>1.3 Dizel</option><option>1.4 Dizel</option><option>1.5 Dizel</option><option>1.6 Dizel</option><option>1.7 Dizel</option><option>1.9 Dizel</option><option>2.0 Dizel</option><option>2.2 Dizel</option><option>2.5 Dizel</option><option>3.0 Dizel</option></optgroup><option>Hybrid</option><option>Elektrik</option><option>Diğer</option>
+        </select>
       </div>
       <div>
         <label>Kilometre</label>
