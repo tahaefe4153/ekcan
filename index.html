@@ -518,6 +518,7 @@
   <input type="text" name="marka" />
   <input type="text" name="model" />
   <input type="text" name="donanim" />
+  <input type="text" name="motor" />
   <input type="text" name="yil" />
   <input type="text" name="km" />
   <input type="text" name="yakit" />
@@ -785,6 +786,10 @@ function formHtml() {
         </div>
       </div>
       <div>
+        <label>Motor</label>
+        <input id="r-motor" type="text" autocomplete="off" oninput="checkStep2()">
+      </div>
+      <div>
         <label>Kilometre</label>
         <input id="r-km" type="number" oninput="checkKm()">
         <div id="km-warning" style="display:none; font-size:12px; color:var(--rust); margin-top:6px; line-height:1.5;">
@@ -887,7 +892,8 @@ function checkStep2() {
   const marka = document.getElementById('r-marka').value.trim();
   const model = document.getElementById('r-model').value.trim();
   const step3 = document.getElementById('step-3-panel');
-  if (marka && model) {
+  const motorV = document.getElementById('r-motor').value.trim();
+  if (marka && model && motorV) {
     step3.style.display = 'block';
   } else {
     step3.style.display = 'none';
@@ -943,7 +949,7 @@ function adminHtml() {
     <div class="req-card">
       <div class="req-head" onclick="toggleReq('${r.id}')">
         <div>
-          <div class="rname">${r.ad || 'İsimsiz'} — ${r.marka} ${r.model}${r.donanim ? ' ' + r.donanim : ''}${r.yil ? ' · ' + r.yil : ''}</div>
+          <div class="rname">${r.ad || 'İsimsiz'} — ${r.marka} ${r.model}${r.donanim ? ' ' + r.donanim : ''}${r.motor ? ' ' + r.motor : ''}${r.yil ? ' · ' + r.yil : ''}</div>
           <div class="rmeta">${r.km ? Number(r.km).toLocaleString('tr-TR') + ' km · ' : ''}${new Date(r.createdAt).toLocaleDateString('tr-TR')}${r.verilenFiyat ? ' · <strong style="color:var(--red);">' + Number(r.verilenFiyat).toLocaleString('tr-TR') + ' TL</strong>' : ''}</div>
         </div>
         <span class="status-tag ${r.durum === 'Yeni' ? 'new' : r.durum === 'Teklif Verildi' ? 'done' : ''}">${r.durum}</span>
@@ -1115,7 +1121,7 @@ function submitToNetlifyForms(r) {
     body: encodeFormData({
       'form-name': 'arac-talebi',
       ad: r.ad, tel: r.tel, eposta: r.eposta, marka: r.marka, model: r.model,
-      donanim: r.donanim, yil: r.yil, km: r.km, yakit: r.yakit, vites: r.vites,
+      donanim: r.donanim, motor: r.motor, yil: r.yil, km: r.km, yakit: r.yakit, vites: r.vites,
       renk: r.renk, hasar: r.hasar, tramerTuru: r.tramerTuru, tramerTutar: r.tramerTutar,
       parcaDurumu: r.parcaDurumu ? r.parcaDurumu.join(', ') : '', notlar: r.notlar
     })
@@ -1128,8 +1134,9 @@ function submitRequest(viaWhatsApp) {
   const marka = document.getElementById('r-marka').value.trim();
   const model = document.getElementById('r-model').value.trim();
 
-  if (!ad || !isValidTrPhone(tel) || !marka || !model) {
-    alert('Ad soyad, geçerli bir telefon numarası, marka ve model zorunlu.');
+  const motor = document.getElementById('r-motor').value.trim();
+  if (!ad || !isValidTrPhone(tel) || !marka || !model || !motor) {
+    alert('Ad soyad, geçerli bir telefon numarası, marka, model ve motor zorunlu.');
     return;
   }
 
@@ -1144,7 +1151,7 @@ function submitRequest(viaWhatsApp) {
     ad,
     tel: document.getElementById('r-tel').value.trim(),
     eposta: document.getElementById('r-eposta').value.trim(),
-    marka, model,
+    marka, model, motor,
     donanim: document.getElementById('r-donanim').value.trim() || null,
     yil: document.getElementById('r-yil').value || null,
     km: document.getElementById('r-km').value || null,
@@ -1181,6 +1188,7 @@ function buildWhatsAppMessage(r) {
     `Ad Soyad: ${r.ad}`,
     r.tel ? `Telefon: ${r.tel}` : null,
     `Araç: ${r.marka} ${r.model}${r.donanim ? ' ' + r.donanim : ''}`,
+    `Motor: ${r.motor}`,
     r.yil ? `Model Yılı: ${r.yil}` : null,
     r.km ? `Kilometre: ${r.km}` : null,
     (r.yakit || r.vites) ? `Yakıt / Vites: ${[r.yakit, r.vites].filter(Boolean).join(' / ')}` : null,
@@ -1276,6 +1284,7 @@ async function loadRealSubmissions() {
       marka: sub.data.marka || null,
       model: sub.data.model || null,
       donanim: sub.data.donanim || null,
+      motor: sub.data.motor || null,
       yil: sub.data.yil || null,
       km: sub.data.km || null,
       yakit: sub.data.yakit || null,
@@ -1316,10 +1325,10 @@ function exportCsv() {
     alert('Aktarılacak talep yok.');
     return;
   }
-  const headers = ['Tarih', 'Ad Soyad', 'Telefon', 'E-posta', 'Marka', 'Model', 'Donanım', 'Yıl', 'Kilometre', 'Yakıt', 'Vites', 'Renk', 'Hasar/Tramer', 'Tramer Türü', 'Tramer Tutarı', 'Boyalı/Değişen Parçalar', 'Notlar', 'Durum', 'Verilen Fiyat'];
+  const headers = ['Tarih', 'Ad Soyad', 'Telefon', 'E-posta', 'Marka', 'Model', 'Donanım', 'Motor', 'Yıl', 'Kilometre', 'Yakıt', 'Vites', 'Renk', 'Hasar/Tramer', 'Tramer Türü', 'Tramer Tutarı', 'Boyalı/Değişen Parçalar', 'Notlar', 'Durum', 'Verilen Fiyat'];
   const rows = requests.map(r => [
     new Date(r.createdAt).toLocaleString('tr-TR'),
-    r.ad, r.tel, r.eposta, r.marka, r.model, r.donanim, r.yil, r.km, r.yakit, r.vites, r.renk,
+    r.ad, r.tel, r.eposta, r.marka, r.model, r.donanim, r.motor, r.yil, r.km, r.yakit, r.vites, r.renk,
     r.hasar, r.tramerTuru, r.tramerTutar,
     r.parcaDurumu ? r.parcaDurumu.join(' / ') : '',
     r.notlar, r.durum, r.verilenFiyat
