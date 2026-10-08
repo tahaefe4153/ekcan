@@ -81,12 +81,18 @@ exports.handler = async function (event) {
       return { statusCode: 200, body: JSON.stringify([]) };
     }
 
-    const subsRes = await fetch(`https://api.netlify.com/api/v1/forms/${form.id}/submissions`, { headers });
-    if (!subsRes.ok) {
-      const t = await subsRes.text();
-      return { statusCode: subsRes.status, body: JSON.stringify({ error: t }) };
+    // Netlify API returns max 100 per page -> walk all pages
+    const subs = [];
+    for (let page = 1; page <= 100; page++) {
+      const subsRes = await fetch(`https://api.netlify.com/api/v1/forms/${form.id}/submissions?per_page=100&page=${page}`, { headers });
+      if (!subsRes.ok) {
+        const t = await subsRes.text();
+        return { statusCode: subsRes.status, body: JSON.stringify({ error: t }) };
+      }
+      const chunk = await subsRes.json();
+      subs.push(...chunk);
+      if (chunk.length < 100) break;
     }
-    const subs = await subsRes.json();
 
     const withMeta = await Promise.all(subs.map(async (s) => {
       const meta = (await store.get(s.id, { type: 'json' })) || {};
